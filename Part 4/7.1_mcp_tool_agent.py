@@ -33,10 +33,10 @@ async def main() -> None:
             tools=[mcp_server],  # MCP tool defined at agent creation
         )
 
-        query = "What is the current time in London?" #"How can I use Playwright for AI-enabled software testing?"
+        query = "How can I use Playwright for AI-enabled software testing?"
         print(f"User: {query}\n")
         print(f"{agent.name}: ", end="", flush=True)
-        async for update in agent.run_stream(query):
+        async for update in agent.run(query, stream=True):
             if update.text:
                 print(update.text, end="", flush=True)
         print("\n")

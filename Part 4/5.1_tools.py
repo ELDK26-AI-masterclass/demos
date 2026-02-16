@@ -48,7 +48,7 @@ async def main() -> None:
     query = "What is the price of product TSH-001 and TSH-003?"
     print(f"User: {query}\n")
     print("Agent: ", end="", flush=True)
-    async for update in agent.run_stream(query):
+    async for update in agent.run(query, stream=True):
         if update.text:
             print(update.text, end="", flush=True)
     print("\n")

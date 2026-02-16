@@ -19,6 +19,14 @@ You'll need a Microsoft Foundry resource with a deployed model. Follow the [Quic
 - [Python 3.10 or later](https://www.python.org/downloads/)
 - [Azure CLI installed](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) and [authenticated](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli)
 
+### Python Dependencies
+
+Install the required packages from the repository root:
+
+```bash
+pip install -r requirements.txt
+```
+
 ### Azure Permissions
 
 Your user account must have one of the following roles assigned for the Azure OpenAI resource:
@@ -133,10 +141,10 @@ In Module 1, we received the complete response at once after the agent finished 
 
 ### Sample: 2_streaming.py
 
-This sample demonstrates streaming with the `run_stream()` method instead of `run()`.
+This sample demonstrates streaming with the `run(..., stream=True)` method.
 
 **Key concepts:**
-1. **`run_stream()` method** - Returns an async iterator that yields updates as they arrive
+1. **`run(..., stream=True)`** - Returns an async iterator that yields updates as they arrive
 2. **Checking for text** - Each update may or may not contain text content
 3. **Flush output** - Use `flush=True` to ensure text appears immediately
 4. **Model parameters** - Control output with `max_tokens` and `temperature`
@@ -190,23 +198,23 @@ python 3.1_human_reply.py
 
 **Try this:** After the agent creates a slogan, type "translate it to Danish" - notice the agent doesn't remember what slogan it created.
 
-### The Solution: Threads
+### The Solution: Sessions
 
-Sample 3.2 introduces **threads** - a way to persist conversation history so the agent remembers the context.
+Sample 3.2 introduces **sessions** - a way to persist conversation history so the agent remembers the context.
 
 **Key concepts:**
-1. **`get_new_thread()`** - Creates a new thread to store conversation history
-2. **`thread=thread`** - Pass the thread to each `run_stream()` call
-3. **`store=True`** - Tells the agent to save this exchange to the thread
+1. **`create_session()`** - Creates a new session to store conversation history
+2. **`session=session`** - Pass the session to each `run()` call
+3. **Conversation persistence** - The session automatically tracks the exchange history
 
-### Sample: 3.2_threads.py
+### Sample: 3.2_sessions.py
 
-This sample demonstrates multi-turn conversation **with** thread context.
+This sample demonstrates multi-turn conversation **with** session context.
 
 **Run the sample:**
 
 ```bash
-python 3.2_threads.py
+python 3.2_sessions.py
 ```
 
 **Try this:** After the agent creates a slogan, type "translate it to Danish" - now the agent remembers the original slogan and can refine it!
@@ -214,7 +222,7 @@ python 3.2_threads.py
 ### Hands-on Exercise
 
 1. Run sample 3.1 and provide feedback like "translate it to Danish" - observe that it doesn't remember the slogan
-2. Run sample 3.2 and provide the same feedback - observe that it now remembers and refines the slogan
+2. Run sample 3.2 and provide the same feedback - observe that it now remembers and refines the slogan thanks to sessions
 
 ---
 
@@ -234,10 +242,10 @@ Modern AI models can understand images as well as text. In this module, you'll l
 This sample demonstrates how to send an image URL along with a text prompt to generate a product description.
 
 **Key concepts:**
-1. **`ChatMessage`** - Create a message with multiple content types
+1. **`Message`** - Create a message with multiple content types
 2. **`Content.from_text()`** - Add text content to the message
 3. **`Content.from_uri()`** - Add an image by URL with its media type
-4. **`Role.USER`** - Specify this is a user message
+4. **`role="user"`** - Specify this is a user message
 
 **Run the sample:**
 
@@ -468,7 +476,7 @@ python 7.1_mcp_tool_agent.py
 This sample shows an alternative approach where MCP tools are provided at **run time** instead of agent creation.
 
 **Key concepts:**
-1. **Run-level tools** - Pass tools to `run_stream()` instead of `as_agent()`
+1. **Run-level tools** - Pass tools to `run()` instead of at agent creation
 2. **Flexibility** - Different queries can use different tools
 3. **Dynamic tool selection** - Decide which tools to use based on the query
 
@@ -482,7 +490,7 @@ python 7.2_mcp_tool_run.py
 
 | Aspect | Agent-Level (7.1) | Run-Level (7.2) |
 |--------|-------------------|-----------------|
-| Definition | `as_agent(tools=[...])` | `run_stream(tools=[...])` |
+| Definition | `Agent(tools=[...])` | `run(tools=[...])` |
 | Availability | All queries | Specific query only |
 | Use case | Tools always needed | Conditional tool use |
 
@@ -586,7 +594,7 @@ Congratulations! You've completed the workshop and learned how to:
 
 - ✅ Create AI agents with Microsoft Agent Framework
 - ✅ Stream responses for better user experience
-- ✅ Maintain conversation context with threads
+- ✅ Maintain conversation context with sessions
 - ✅ Process images as input
 - ✅ Extend agents with custom tools
 - ✅ Use agents as tools for multi-agent collaboration

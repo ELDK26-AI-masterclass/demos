@@ -1,6 +1,6 @@
 import asyncio
 
-from agent_framework import ChatMessage, Content, Role
+from agent_framework import Agent, Content, Message
 from agent_framework.azure import AzureOpenAIChatClient
 from azure.identity import AzureCliCredential
 
@@ -18,13 +18,14 @@ async def main() -> None:
 
     # Create agent with Azure Chat Client
     # For authentication, run `az login` command in terminal
-    agent = AzureOpenAIChatClient(credential=AzureCliCredential()).as_agent(
+    agent = Agent(
+        client=AzureOpenAIChatClient(credential=AzureCliCredential()),
         instructions="You are a creative marketing copywriter who writes compelling product descriptions.",
     )
 
     # Create a message with both text and an image
-    message = ChatMessage(
-        role=Role.USER,
+    message = Message(
+        role="user",
         contents=[
             Content.from_text("Write a product description for this t-shirt for an online store."),
             Content.from_uri(
@@ -37,7 +38,7 @@ async def main() -> None:
     print("User: Write a product description for this t-shirt for an online store.\n")
     print("[Image: White t-shirt]\n")
     print("Agent: ", end="", flush=True)
-    async for update in agent.run_stream(message):
+    async for update in agent.run(message, stream=True):
         if update.text:
             print(update.text, end="", flush=True)
     print("\n")

@@ -11,7 +11,7 @@ This sample demonstrates how to provide MCP tools at the run level instead of th
 This is useful when you want to use different tools for different queries, or when tools
 should only be available for specific interactions.
 
-The MCP tool is passed to run_stream() instead of being defined when creating the agent.
+The MCP tool is passed to run() instead of being defined when creating the agent.
 """
 
 
@@ -36,7 +36,7 @@ async def main() -> None:
         print(f"User: {query}\n")
         print(f"{agent.name}: ", end="", flush=True)
         # Pass MCP tool at run time
-        async for update in agent.run_stream(query, tools=[mcp_server]):
+        async for update in agent.run(query, tools=[mcp_server], stream=True):
             if update.text:
                 print(update.text, end="", flush=True)
         print("\n")

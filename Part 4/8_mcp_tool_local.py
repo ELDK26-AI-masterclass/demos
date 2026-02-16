@@ -35,10 +35,10 @@ async def main() -> None:
             tools=[mcp_server],
         )
 
-        query = "Open a search engine. Look for three examples of t-shirts in different colors. Provide the links."
+        query = "Open a search engine. Look for Experts Live Denmark and try buying a ticket. How much is a ticket?"
         print(f"User: {query}\n")
         print(f"{agent.name}: ", end="", flush=True)
-        async for update in agent.run_stream(query):
+        async for update in agent.run(query, stream=True):
             if update.text:
                 print(update.text, end="", flush=True)
         print("\n")

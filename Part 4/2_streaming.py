@@ -24,13 +24,14 @@ async def main() -> None:
     query = "Write a creative marketing text for a new collection of Hawaiian shirts made of ecological cotton in Contoso's new factory in Portugal."
     print(f"User: {query}\n")
     print("Agent: ", end="", flush=True)
-    async for update in agent.run_stream(
+    async for chunk in agent.run(
         query,
+        stream=True,
         max_tokens=500,
-        temperature=0.7
+        temperature=0.7,
     ):
-        if update.text:
-            print(update.text, end="", flush=True)
+        if chunk.text:
+            print(chunk.text, end="", flush=True)
     print("\n")
 
 

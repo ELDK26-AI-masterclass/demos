@@ -1,5 +1,6 @@
 import asyncio
 
+from agent_framework import Agent
 from agent_framework.azure import AzureOpenAIChatClient
 from azure.identity import AzureCliCredential
 
@@ -17,21 +18,22 @@ async def main() -> None:
 
     # Create agent with Azure Chat Client
     # For authentication, run `az login` command in terminal
-    agent = AzureOpenAIChatClient(credential=AzureCliCredential()).as_agent(
+    agent = Agent(
+        client=AzureOpenAIChatClient(credential=AzureCliCredential()),
         instructions="You are a creative marketing copywriter. Write concise, catchy slogans.",
     )
 
     query = "Write a marketing slogan for a new collection of basic t-shirts."
     print(f"User: {query}\n")
     print("Agent: ", end="", flush=True)
-    async for update in agent.run_stream(query):
+    async for update in agent.run(query, stream=True):
         if update.text:
             print(update.text, end="", flush=True)
 
     # Get user's feedback
     user_message = input("\n\nYour feedback: ")
     print("\nAgent: ", end="", flush=True)
-    async for update in agent.run_stream(user_message):
+    async for update in agent.run(user_message, stream=True):
         if update.text:
             print(update.text, end="", flush=True)
     print("\n")
