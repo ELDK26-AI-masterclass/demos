@@ -1,6 +1,50 @@
 @Server_HostAddress = http://localhost:5442
 
-GET {{Server_HostAddress}}/api/weatherforecast/
+###
+# @name weatherForecast
+GET {{Server_HostAddress}}/api/weatherforecast
 Accept: application/json
 
+> {%
+client.test("GET /api/weatherforecast returns 200", function () {
+	client.assert(response.status === 200, "Expected status 200");
+});
+
+client.test("GET /api/weatherforecast returns 5 items", function () {
+	const payload = JSON.parse(response.body);
+	client.assert(Array.isArray(payload), "Expected response body array");
+	client.assert(payload.length === 5, "Expected exactly 5 forecast items");
+});
+
+client.test("Forecast items contain expected properties", function () {
+	const payload = JSON.parse(response.body);
+	const item = payload[0];
+	client.assert(item && typeof item === "object", "Expected first forecast item object");
+	client.assert(typeof item.date === "string", "Expected date as string");
+	client.assert(typeof item.temperatureC === "number", "Expected temperatureC as number");
+	client.assert(typeof item.temperatureF === "number", "Expected temperatureF as number");
+	client.assert(typeof item.summary === "string", "Expected summary as string");
+});
+%}
+
 ###
+# @name weatherForecastCached
+GET {{Server_HostAddress}}/api/weatherforecast
+Accept: application/json
+
+> {%
+client.test("Repeat GET /api/weatherforecast returns 200", function () {
+	client.assert(response.status === 200, "Expected status 200 on repeated request");
+});
+%}
+
+###
+# @name health
+GET {{Server_HostAddress}}/health
+Accept: application/json
+
+> {%
+client.test("GET /health returns 200", function () {
+	client.assert(response.status === 200, "Expected health status 200");
+});
+%}

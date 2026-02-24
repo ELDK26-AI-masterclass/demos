@@ -13,7 +13,7 @@ function App() {
   const [weatherData, setWeatherData] = useState<WeatherForecast[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [useCelsius, setUseCelsius] = useState(true)
+  const [useCelsius, setUseCelsius] = useState(false)
 
   const fetchWeatherForecast = async () => {
     setLoading(true)
