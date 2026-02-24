@@ -9,11 +9,29 @@ interface WeatherForecast {
   summary: string
 }
 
+type ThemeMode = 'light' | 'dark'
+
+const themeStorageKey = 'theme-mode'
+
+const getInitialThemeMode = (): ThemeMode => {
+  if (typeof window === 'undefined') {
+    return 'dark'
+  }
+
+  const storedTheme = window.localStorage.getItem(themeStorageKey)
+  if (storedTheme === 'light' || storedTheme === 'dark') {
+    return storedTheme
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 function App() {
   const [weatherData, setWeatherData] = useState<WeatherForecast[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [useCelsius, setUseCelsius] = useState(false)
+  const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialThemeMode)
 
   const fetchWeatherForecast = async () => {
     setLoading(true)
@@ -40,6 +58,13 @@ function App() {
     fetchWeatherForecast()
   }, [])
 
+  useEffect(() => {
+    const root = document.documentElement
+    root.setAttribute('data-theme', themeMode)
+    root.style.colorScheme = themeMode
+    window.localStorage.setItem(themeStorageKey, themeMode)
+  }, [themeMode])
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(undefined, { 
       weekday: 'short', 
@@ -51,6 +76,28 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
+        <div className="theme-control theme-control-header">
+          <span className="theme-label">Dark mode</span>
+          <fieldset className="toggle-switch theme-switch" aria-label="Dark mode selection">
+            <legend className="visually-hidden">Dark mode</legend>
+            <button
+              className={`toggle-option ${themeMode === 'light' ? 'active' : ''}`}
+              onClick={() => setThemeMode('light')}
+              aria-pressed={themeMode === 'light'}
+              type="button"
+            >
+              Off
+            </button>
+            <button
+              className={`toggle-option ${themeMode === 'dark' ? 'active' : ''}`}
+              onClick={() => setThemeMode('dark')}
+              aria-pressed={themeMode === 'dark'}
+              type="button"
+            >
+              On
+            </button>
+          </fieldset>
+        </div>
         <a 
           href="https://aspire.dev" 
           target="_blank" 
