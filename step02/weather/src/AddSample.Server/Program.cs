@@ -2,8 +2,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
-builder.AddRedisClientBuilder("cache")
-    .WithOutputCache();
+
+// Configure output caching: prefer Redis when a connection string is provided,
+// otherwise fall back to the default in-memory output cache so the app
+// remains runnable in development without requiring Redis.
+var redisConn = builder.Configuration.GetConnectionString("cache")
+    ?? builder.Configuration["Aspire:StackExchange:Redis:ConnectionString"];
+if (!string.IsNullOrWhiteSpace(redisConn))
+{
+    builder.AddRedisClientBuilder("cache")
+        .WithOutputCache();
+}
+else
+{
+    builder.Services.AddOutputCache();
+}
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
@@ -43,7 +56,11 @@ api.MapGet("weatherforecast", () =>
 
 app.MapDefaultEndpoints();
 
-app.UseFileServer();
+if (!string.IsNullOrWhiteSpace(app.Environment.WebRootPath)
+    && Directory.Exists(app.Environment.WebRootPath))
+{
+    app.UseFileServer();
+}
 
 app.Run();
 
@@ -51,3 +68,6 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+// Expose Program type for WebApplicationFactory in integration tests
+public partial class Program { }
