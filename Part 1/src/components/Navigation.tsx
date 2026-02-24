@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
-import { ShoppingCart } from '@phosphor-icons/react'
+import { ShoppingCart, Sun, Moon } from '@phosphor-icons/react'
+import { useTheme } from 'next-themes'
 import { useCart } from '@/lib/cart-context'
 import { Badge } from '@/components/ui/badge'
 
 export function Navigation() {
   const { getTotalItems } = useCart()
   const totalItems = getTotalItems()
+  const { resolvedTheme, setTheme } = useTheme()
 
   return (
     <nav className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
@@ -25,6 +27,17 @@ export function Navigation() {
             >
               Shop
             </Link>
+            <button
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {resolvedTheme === 'dark' ? (
+                <Sun size={24} className="text-foreground" />
+              ) : (
+                <Moon size={24} className="text-foreground" />
+              )}
+            </button>
             <button className="relative p-2 hover:bg-muted rounded-lg transition-colors">
               <ShoppingCart size={24} className="text-foreground" />
               {totalItems > 0 && (
