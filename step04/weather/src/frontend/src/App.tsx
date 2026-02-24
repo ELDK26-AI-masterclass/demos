@@ -14,6 +14,15 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [useCelsius, setUseCelsius] = useState(false)
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const savedTheme = localStorage.getItem('theme')
+
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
 
   const fetchWeatherForecast = async () => {
     setLoading(true)
@@ -40,6 +49,11 @@ function App() {
     fetchWeatherForecast()
   }, [])
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(undefined, { 
       weekday: 'short', 
@@ -51,6 +65,17 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
+        <div className="top-controls">
+          <button
+            className="theme-toggle"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            type="button"
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={theme === 'dark'}
+          >
+            <span aria-hidden="true">{theme === 'dark' ? 'Dark mode' : 'Light mode'}</span>
+          </button>
+        </div>
         <a 
           href="https://aspire.dev" 
           target="_blank" 
