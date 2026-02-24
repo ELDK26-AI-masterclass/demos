@@ -1,0 +1,60 @@
+schema: spec-driven
+
+context: |
+  Solution: .NET Aspire starter-style app.
+  Projects:
+  - src/AddSample.AppHost: Aspire orchestration topology and dependency wiring.
+  - src/AddSample.Server: ASP.NET Core minimal API (net10.0).
+  - src/frontend: React 19 + TypeScript + Vite frontend.
+
+  Integration model:
+  - Frontend communicates with backend via REST under /api.
+  - Use Aspire references and startup ordering in AppHost (WithReference, WaitFor).
+
+  Backend conventions:
+  - Keep minimal APIs (avoid MVC unless explicitly requested).
+  - Keep handlers small; move non-trivial logic to focused services/classes.
+  - Use AddProblemDetails + UseExceptionHandler for centralized error handling.
+  - Use System.Text.Json.
+  - Keep OpenAPI development-only unless requested.
+  - Preserve output caching and Aspire health endpoints (/health, /alive in development).
+  - Prefer async I/O and pass CancellationToken when practical.
+  - Register dependencies explicitly with intentional lifetimes (Scoped by default for request-bound logic).
+
+  Frontend conventions:
+  - Functional components + hooks.
+  - Strict typing for API models and component state.
+  - Preserve accessibility basics and Vite proxy behavior.
+  - Do not hardcode backend host/port; use relative /api routes.
+
+  API/contract rules:
+  - Keep routes under /api.
+  - Use meaningful HTTP status codes and clear error payloads.
+  - Update src/AddSample.Server/AddSample.Server.http when endpoints change.
+
+  Dependency policy:
+  - Prefer existing dependencies.
+  - Prefer Microsoft packages on backend where feasible.
+  - Ask before adding third-party NuGet/npm dependencies.
+
+  General style:
+  - Favor clarity over cleverness.
+  - Keep changes minimal, incremental, and aligned with existing src patterns.
+
+rules:
+  proposal:
+    - Describe affected project(s): AppHost, Server, frontend.
+    - State API surface changes under /api and expected status codes.
+    - Include impact on AddSample.Server.http examples when relevant.
+    - Explicitly call out dependency additions and justify why existing packages are insufficient.
+    - Include non-goals and rollout/risk notes for behavior changes.
+  tasks:
+    - Break work into small, verifiable steps grouped by AppHost, Server, and frontend when applicable.
+    - Include contract sync tasks (endpoint + AddSample.Server.http updates) for API changes.
+    - Include validation tasks (build/test/lint) for each touched project.
+    - Add an explicit check that /api routing, proxy behavior, and Aspire wiring remain intact.
+  spec:
+    - Preserve existing architecture: Aspire orchestration + minimal API + React frontend.
+    - Prefer focused services for backend business logic over Program.cs expansion.
+    - Keep frontend/backend boundary as REST only.
+    - Avoid broad refactors unless explicitly requested.
