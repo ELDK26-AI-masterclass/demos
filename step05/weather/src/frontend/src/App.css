@@ -227,6 +227,16 @@
   align-items: center;
 }
 
+.header-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
 .theme-control {
   display: inline-flex;
   align-items: center;
@@ -234,9 +244,40 @@
 }
 
 .theme-control-header {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+  position: static;
+}
+
+.language-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language-select {
+  border: 1px solid var(--weather-card-border);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  min-width: 8.5rem;
+}
+
+.language-select:focus-visible {
+  outline: 3px solid var(--focus-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .language-select {
+    background: rgba(102, 126, 234, 0.08);
+  }
+}
+
+:root[data-theme='light'] .language-select {
+  background: rgba(102, 126, 234, 0.08);
 }
 
 .theme-label {
@@ -810,9 +851,23 @@
     justify-content: space-between;
   }
 
+  .header-controls {
+    position: static;
+    align-items: stretch;
+    margin-bottom: 0.75rem;
+  }
+
   .theme-control-header {
     position: static;
-    margin-bottom: 0.75rem;
+  }
+
+  .language-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .language-select {
+    flex: 1;
   }
 
   .toggle-option {
